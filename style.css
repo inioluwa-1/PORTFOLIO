@@ -550,17 +550,7 @@
             box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
         }
 
-        /* Footer */
-        footer {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px 0;
-            text-align: center;
-            border-top: 1px solid rgba(0, 255, 136, 0.2);
-        }
-
-        footer p {
-            color: #aaaaaa;
-        }
+       
 
         /* Animations */
         @keyframes slideInLeft {

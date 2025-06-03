@@ -1,4 +1,4 @@
-      // Toast Notification System
+// Toast Notification System
         function showToast(message, type = 'success', duration = 4000) {
             // Remove any existing toasts
             const existingToasts = document.querySelectorAll('.toast');
@@ -131,11 +131,11 @@
                 }
             });
         }, observerOptions);
-
+        
         document.querySelectorAll('.scroll-animate').forEach(el => {
             observer.observe(el);
         });
-
+        
         // Navigation background on scroll
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav');
@@ -147,7 +147,7 @@
                 nav.style.background = isLight ? 'rgba(248, 249, 250, 0.95)' : 'rgba(0, 0, 0, 0.9)';
             }
         });
-
+        
         // Form submission handler with toast notifications
         document.querySelector('.contact-form form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -158,43 +158,39 @@
             const email = formData.get('email');
             const message = formData.get('message');
             
-            // Simple validation
-            if (!name || !email || !message) {
-                showToast('Please fill in all fields.', 'error');
-                return;
-            }
-
-            // Email validation
+            // Validation...
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showToast('Please enter a valid email address.', 'error');
                 return;
             }
-            
-            // Simulate form submission
-            const submitBtn = this.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Sending...';
-            submitBtn.disabled = true;
-            
-            // Show loading toast
-            const loadingToast = showToast('Sending your message...', 'success', 6000);
-            
-            setTimeout(() => {
-                // Remove loading toast
-                if (loadingToast.parentNode) {
-                    loadingToast.remove();
-                }
-                
-                // Show success toast
-                showToast(`Thank you ${name}! Your message has been sent successfully. I'll get back to you soon.`, 'success', 5000);
-                
-                // Reset form
-                this.reset();
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }, 2000);
-        });
+
+    const submitBtn = this.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    const loadingToast = showToast('Sending your message...', 'success', 6000);
+
+    // Send using EmailJS
+    emailjs.send("service_wayvmfq", "template_r051j22", {
+        from_name: name,
+        from_email: email,
+        message: message
+    }).then(() => {
+        if (loadingToast.parentNode) loadingToast.remove();
+        showToast(`Thank you ${name}! Your message has been sent successfully.`, 'success');
+        this.reset();
+    }).catch((error) => {
+        if (loadingToast.parentNode) loadingToast.remove();
+        showToast('Oops! Something went wrong. Please try again later.', 'error');
+        console.error("EmailJS error:", error);
+    }).finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
 
         // Add interactive hover effects to skill tags
         document.querySelectorAll('.skill-tag').forEach(tag => {
@@ -230,3 +226,5 @@
                 showToast('Welcome to my portfolio! Feel free to explore and get in touch.', 'success', 3000);
             }, 1000);
         });
+
+        
