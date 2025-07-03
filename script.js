@@ -1,169 +1,104 @@
 // Toast Notification System
-        function showToast(message, type = 'success', duration = 4000) {
-            // Remove any existing toasts
-            const existingToasts = document.querySelectorAll('.toast');
-            existingToasts.forEach(toast => toast.remove());
+function showToast(message, type = 'success', duration = 4000) {
+    const existingToasts = document.querySelectorAll('.toast');
+    existingToasts.forEach(toast => toast.remove());
 
-            // Create toast element
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            // Set toast content
-            const icon = type === 'success' ? 'check_circle' : 'error';
-            toast.innerHTML = `
-                <i class="material-icons toast-icon">${icon}</i>
-                <div class="toast-message">${message}</div>
-                <button class="toast-close" aria-label="Close toast">
-                    <i class="material-icons">close</i>
-                </button>
-            `;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
 
-            // Add toast to document
-            document.body.appendChild(toast);
+    const icon = type === 'success' ? 'check_circle' : 'error';
+    toast.innerHTML = `
+        <i class="material-icons toast-icon">${icon}</i>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" aria-label="Close toast">
+            <i class="material-icons">close</i>
+        </button>
+    `;
 
-            // Show toast with animation
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 100);
+    document.body.appendChild(toast);
 
-            // Auto-hide toast
-            const hideToast = () => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
-                }, 400);
-            };
+    setTimeout(() => toast.classList.add('show'), 100);
 
-            // Set auto-hide timer
-            const autoHideTimer = setTimeout(hideToast, duration);
+    const hideToast = () => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 400);
+    };
 
-            // Add close button functionality
-            const closeBtn = toast.querySelector('.toast-close');
-            closeBtn.addEventListener('click', () => {
-                clearTimeout(autoHideTimer);
-                hideToast();
-            });
+    const autoHideTimer = setTimeout(hideToast, duration);
 
-            // Add click to dismiss functionality
-            toast.addEventListener('click', (e) => {
-                if (e.target === toast || e.target.classList.contains('toast-message')) {
-                    clearTimeout(autoHideTimer);
-                    hideToast();
-                }
-            });
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        clearTimeout(autoHideTimer);
+        hideToast();
+    });
 
-            return toast;
+    toast.addEventListener('click', (e) => {
+        if (e.target === toast || e.target.classList.contains('toast-message')) {
+            clearTimeout(autoHideTimer);
+            hideToast();
         }
+    });
 
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const mobileThemeToggle = document.getElementById('mobileThemeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const themeText = document.getElementById('themeText');
-        const mobileThemeIcon = document.getElementById('mobileThemeIcon');
-        const body = document.body;
+    return toast;
+}
 
-        // Check for saved theme preference or default to 'dark'
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-        
-        // Apply the current theme on page load
-        if (currentTheme === 'light') {
-            body.classList.add('light-mode');
-            updateThemeToggle(true);
-        }
-
-        function updateThemeToggle(isLight) {
-            if (isLight) {
-                themeIcon.textContent = 'light_mode';
-                themeText.textContent = 'Dark';
-                mobileThemeIcon.textContent = 'light_mode';
-            } else {
-                themeIcon.textContent = 'dark_mode';
-                themeText.textContent = 'Light';
-                mobileThemeIcon.textContent = 'dark_mode';
-            }
-        }
-
-        function toggleTheme() {
-            body.classList.toggle('light-mode');
-            const isLight = body.classList.contains('light-mode');
-            
-            // Update button appearance
-            updateThemeToggle(isLight);
-            
-            // Save theme preference
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            
-            // Add a subtle animation effect
-            body.style.transition = 'all 0.3s ease';
-        }
-
-        // Add event listeners for both desktop and mobile theme toggles
-        themeToggle.addEventListener('click', toggleTheme);
-        mobileThemeToggle.addEventListener('click', toggleTheme);
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
-        });
+        }
+    });
+});
 
-        // Scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+// Scroll animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate');
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.scroll-animate').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // Navigation background on scroll
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            const isLight = body.classList.contains('light-mode');
-            
-            if (window.scrollY > 100) {
-                nav.style.background = isLight ? 'rgba(248, 249, 250, 0.98)' : 'rgba(0, 0, 0, 0.95)';
-            } else {
-                nav.style.background = isLight ? 'rgba(248, 249, 250, 0.95)' : 'rgba(0, 0, 0, 0.9)';
-            }
-        });
-        
-        // Form submission handler with toast notifications
-        document.querySelector('.contact-form form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(this);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const message = formData.get('message');
-            
-            // Validation...
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast('Please enter a valid email address.', 'error');
-                return;
-            }
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.scroll-animate').forEach(el => {
+    observer.observe(el);
+});
+
+// Navigation background on scroll
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 100) {
+        nav.style.background = 'rgba(0, 0, 0, 0.95)';
+    } else {
+        nav.style.background = 'rgba(0, 0, 0, 0.9)';
+    }
+});
+
+// Form submission handler with toast notifications
+document.querySelector('.contact-form form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const message = formData.get('message');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Please enter a valid email address.', 'error');
+        return;
+    }
 
     const submitBtn = this.querySelector('.submit-btn');
     const originalText = submitBtn.textContent;
@@ -172,7 +107,6 @@
 
     const loadingToast = showToast('Sending your message...', 'success', 6000);
 
-    // Send using EmailJS
     emailjs.send("service_wayvmfq", "template_r051j22", {
         from_name: name,
         from_email: email,
@@ -191,40 +125,29 @@
     });
 });
 
+// Interactive hover effects to skill tags
+document.querySelectorAll('.skill-tag').forEach(tag => {
+    tag.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.05) rotate(2deg)';
+    });
 
-        // Add interactive hover effects to skill tags
-        document.querySelectorAll('.skill-tag').forEach(tag => {
-            tag.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05) rotate(2deg)';
-            });
-            
-            tag.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1) rotate(0deg)';
-            });
-        });
+    tag.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1) rotate(0deg)';
+    });
+});
 
-        // Add floating animation to hero section
-        const hero = document.querySelector('.hero-content');
-        let floatDirection = 1;
-        
-        setInterval(() => {
-            floatDirection *= -1;
-            hero.style.transform = `translateY(${floatDirection * 10}px)`;
-        }, 3000);
+// Floating animation for hero section
+const hero = document.querySelector('.hero-content');
+let floatDirection = 1;
 
-        // Keyboard accessibility for theme toggle
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'T' && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault();
-                toggleTheme();
-            }
-        });
+setInterval(() => {
+    floatDirection *= -1;
+    hero.style.transform = `translateY(${floatDirection * 10}px)`;
+}, 3000);
 
-        // Demo toast on page load (optional - remove if not wanted)
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                showToast('Welcome to my portfolio! Feel free to explore and get in touch.', 'success', 3000);
-            }, 1000);
-        });
-
-        
+// Demo toast on page load (optional)
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        showToast('Welcome to my portfolio! Feel free to explore and get in touch.', 'success', 3000);
+    }, 1000);
+});
